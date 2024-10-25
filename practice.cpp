@@ -308,4 +308,6 @@ int main() {
   cout<<b1<<endl;
   cout<<b2<<endl;
   cout<<b3<<endl;
+
+  return 0;
 }
