@@ -334,3 +334,51 @@ Task Queue: A lower-priority queue that stores tasks (e.g., callbacks from setTi
 
 
 */
+
+//------------------- DOM cheat sheet-------------------------------------------
+
+/*
+
+The Document Object Model (DOM) is a programming interface for HTML and XML documents. It represents the structure of a document as a tree of nodes, which allows you to access and manipulate the elements of a web page using JavaScript.
+
+**Selecting Elements:**
+
+* **`document.getElementById(id)`:**  Selects an element by its unique ID.
+* **`document.querySelector(selector)`:**  Selects the first element that matches the specified CSS selector.
+* **`document.querySelectorAll(selector)`:**  Selects all elements that match the specified CSS selector.
+* **`document.getElementsByTagName(tagName)`:**  Selects all elements with the specified tag name.
+* **`document.getElementsByClassName(className)`:**  Selects all elements with the specified class name.
+
+**Accessing and Modifying Element Content:**
+
+* **`element.innerHTML`:**  Gets or sets the HTML content of an element.
+* **`element.textContent`:**  Gets or sets the text content of an element.
+* **`element.getAttribute(attributeName)`:**  Gets the value of the specified attribute.
+* **`element.setAttribute(attributeName, value)`:**  Sets the value of the specified attribute.
+* **`element.removeAttribute(attributeName)`:**  Removes the specified attribute.
+
+**Manipulating the DOM Tree:**
+
+* **`element.appendChild(child)`:**  Adds a child node to the end of an element's child list.
+* **`element.insertBefore(newChild, referenceChild)`:**  Inserts a new child node before a reference child node.
+* **`element.removeChild(child)`:**  Removes a child node from an element.
+* **`element.replaceChild(newChild, oldChild)`:**  Replaces an existing child node with a new child node.
+* **`document.createElement(tagName)`:**  Creates a new element with the specified tag name.
+
+**Event Handling:**
+
+* **`element.addEventListener(eventType, listener)`:**  Adds an event listener to an element.
+* **`element.removeEventListener(eventType, listener)`:**  Removes an event listener from an element.
+
+**Common Properties and Methods:**
+
+* **`element.parentNode`:**  Gets the parent node of an element.
+* **`element.childNodes`:**  Gets a collection of an element's child nodes.
+* **`element.firstChild`:**  Gets the first child node of an element.
+* **`element.lastChild`:**  Gets the last child node of an element.
+* **`element.nextSibling`:**  Gets the next sibling node of an element.
+* **`element.previousSibling`:**  Gets the previous sibling node of an element.
+* **`element.classList`:**  Provides methods for manipulating the CSS classes of an element.
+* **`element.style`:**  Provides access to an element's CSS styles.
+
+*/
