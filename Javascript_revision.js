@@ -381,4 +381,189 @@ The Document Object Model (DOM) is a programming interface for HTML and XML docu
 * **`element.classList`:**  Provides methods for manipulating the CSS classes of an element.
 * **`element.style`:**  Provides access to an element's CSS styles.
 
+** imp: ele.closest()
+The element.closest() method in JavaScript is used to find the nearest ancestor (including the element itself) that matches a specified CSS selector. This method traverses up the DOM tree, starting from the element it’s called on, and checks each ancestor until it finds one that matches the selector. If no matching ancestor is found, it returns null.
+The closest() method is useful when you want to perform actions on an element’s parent or ancestor based on a particular class or attribute without having to manually traverse the DOM using multiple parentNode or parentElement calls.
+
+*/
+
+//------------------------------------CSS from DOM-------------------------------
+/*
+
+To manage classes, there are two DOM properties:
+
+className – the string value, good to manage the whole set of classes.
+classList – the object with methods add/remove/toggle/contains, good for individual classes.
+To change the styles:
+
+The style property is an object with camelCased styles. Reading and writing to it has the same meaning as modifying individual properties in the "style" attribute. To see how to apply important and other rare stuff – there’s a list of methods at MDN.
+
+The style.cssText property corresponds to the whole "style" attribute, the full string of styles.
+
+To read the resolved styles (with respect to all classes, after all CSS is applied and final values are calculated):
+
+The getComputedStyle(elem, [pseudo]) returns the style-like object with them. Read-only.
+
+*/
+
+//--------------------------------Events and event handlers ------------------------
+
+/*
+There are 3 ways to assign event handlers:
+
+HTML attribute: onclick="...".
+DOM property: elem.onclick = function.
+Methods: elem.addEventListener(event, handler[, phase]) to add, removeEventListener to remove.
+HTML attributes are used sparingly, because JavaScript in the middle of an HTML tag looks a little bit odd and alien. Also can’t write lots of code in there.
+
+DOM properties are ok to use, but we can’t assign more than one handler of the particular event. In many cases that limitation is not pressing.
+
+The last way is the most flexible, but it is also the longest to write. There are few events that only work with it, for instance transitionend and DOMContentLoaded (to be covered). Also addEventListener supports objects as event handlers. In that case the method handleEvent is called in case of the event.
+
+No matter how you assign the handler – it gets an event object as the first argument. That object contains the details about what’s happened.
+
+*/
+
+// ------------------------ Bubbling and capturing events ------------------------------------------
+
+/*
+
+When an event happens – the most nested element where it happens gets labeled as the “target element” (event.target).
+
+Then the event moves down from the document root to event.target, calling handlers assigned with addEventListener(..., true) on the way (true is a shorthand for {capture: true}).
+Then handlers are called on the target element itself.
+Then the event bubbles up from event.target to the root, calling handlers assigned using on<event>, HTML attributes and addEventListener without the 3rd argument or with the 3rd argument false/{capture:false}.
+Each handler can access event object properties:
+
+event.target – the deepest element that originated the event.
+event.currentTarget (=this) – the current element that handles the event (the one that has the handler on it)
+event.eventPhase – the current phase (capturing=1, target=2, bubbling=3).
+Any event handler can stop the event by calling event.stopPropagation(), but that’s not recommended, because we can’t really be sure we won’t need it above, maybe for completely different things.
+
+The capturing phase is used very rarely, usually we handle events on bubbling. And there’s a logical explanation for that.
+
+In real world, when an accident happens, local authorities react first. They know best the area where it happened. Then higher-level authorities if needed.
+
+The same for event handlers. The code that set the handler on a particular element knows maximum details about the element and what it does. A handler on a particular <td> may be suited for that exactly <td>, it knows everything about it, so it should get the chance first. Then its immediate parent also knows about the context, but a little bit less, and so on till the very top element that handles general concepts and runs the last one.
+
+Bubbling and capturing lay the foundation for “event delegation” – an extremely powerful event handling pattern that we study in the next chapter.
+
+*/
+
+// --------------------------Event delegation ------------------------------------
+/*
+Event delegation is really cool! It’s one of the most helpful patterns for DOM events.
+
+It’s often used to add the same handling for many similar elements, but not only for that.
+
+The algorithm:
+
+Put a single handler on the container.
+In the handler – check the source element event.target.
+If the event happened inside an element that interests us, then handle the event.
+
+** The dataset read-only property of the HTMLElement interface provides read/write access to custom data attributes (data-*) on elements. It exposes a map of strings (DOMStringMap) with an entry for each data-* attribute.
+
+
+<div id="user" data-id="1234567890" data-user="carinaanand" data-date-of-birth>
+  Carina Anand
+</div>
+
+el.dataset.dateOfBirth = "1960-10-03";
+*/
+
+// ---------------------Browser default actions ----------------------------
+
+/*
+There are many default browser actions:
+
+mousedown – starts the selection (move the mouse to select).
+click on <input type="checkbox"> – checks/unchecks the input.
+submit – clicking an <input type="submit"> or hitting Enter inside a form field causes this event to happen, and the browser submits the form after it.
+keydown – pressing a key may lead to adding a character into a field, or other actions.
+contextmenu – the event happens on a right-click, the action is to show the browser context menu.
+…there are more…
+All the default actions can be prevented if we want to handle the event exclusively by JavaScript.
+
+To prevent a default action – use either event.preventDefault() or return false. The second method works only for handlers assigned with on<event>.
+
+The passive: true option of addEventListener tells the browser that the action is not going to be prevented. That’s useful for some mobile events, like touchstart and touchmove, to tell the browser that it should not wait for all handlers to finish before scrolling.
+
+If the default action was prevented, the value of event.defaultPrevented becomes true, otherwise it’s false.
+*/
+
+// ------------------------------Custom events----------------------------
+
+/*
+
+To generate an event from code, we first need to create an event object.
+
+The generic Event(name, options) constructor accepts an arbitrary event name and the options object with two properties:
+
+bubbles: true if the event should bubble.
+cancelable: true if the event.preventDefault() should work.
+Other constructors of native events like MouseEvent, KeyboardEvent and so on accept properties specific to that event type. For instance, clientX for mouse events.
+
+For custom events we should use CustomEvent constructor. It has an additional option named detail, we should assign the event-specific data to it. Then all handlers can access it as event.detail.
+
+Despite the technical possibility of generating browser events like click or keydown, we should use them with great care.
+
+We shouldn’t generate browser events as it’s a hacky way to run handlers. That’s bad architecture most of the time.
+
+Native events might be generated:
+
+As a dirty hack to make 3rd-party libraries work the needed way, if they don’t provide other means of interaction.
+For automated testing, to “click the button” in the script and see if the interface reacts correctly.
+Custom events with our own names are often generated for architectural purposes, to signal what happens inside our menus, sliders, carousels etc.
+
+
+*/
+
+// ------------------------------ Mouse events ---------------------------------
+/*
+Mouse events have the following properties:
+
+Button: button.
+
+Modifier keys (true if pressed): altKey, ctrlKey, shiftKey and metaKey (Mac).
+
+If you want to handle Ctrl, then don’t forget Mac users, they usually use Cmd, so it’s better to check if (e.metaKey || e.ctrlKey).
+Window-relative coordinates: clientX/clientY.
+
+Document-relative coordinates: pageX/pageY.
+
+The default browser action of mousedown is text selection, if it’s not good for the interface, then it should be prevented.
+
+In the next chapter we’ll see more details about events that follow pointer movement and how to track element changes under it.
+
+
+
+We covered events mouseover, mouseout, mousemove, mouseenter and mouseleave.
+
+These things are good to note:
+
+A fast mouse move may skip intermediate elements.
+Events mouseover/out and mouseenter/leave have an additional property: relatedTarget. That’s the element that we are coming from/to, complementary to target.
+Events mouseover/out trigger even when we go from the parent element to a child element. The browser assumes that the mouse can be only over one element at one time – the deepest one.
+
+Events mouseenter/leave are different in that aspect: they only trigger when the mouse comes in and out the element as a whole. Also they do not bubble.
+
+*/
+
+// -----------------------Ponter events (better option to mouse events)-------------------------------
+
+/*
+Pointer events allow handling mouse, touch and pen events simultaneously, with a single piece of code.
+
+Pointer events extend mouse events. We can replace mouse with pointer in event names and expect our code to continue working for mouse, with better support for other device types.
+
+For drag’n’drops and complex touch interactions that the browser may decide to hijack and handle on its own – remember to cancel the default action on events and set touch-action: none in CSS for elements that we engage.
+
+Additional abilities of pointer events are:
+
+Multi-touch support using pointerId and isPrimary.
+Device-specific properties, such as pressure, width/height, and others.
+Pointer capturing: we can retarget all pointer events to a specific element until pointerup/pointercancel. (setPointerCapture method)
+As of now, pointer events are supported in all major browsers, so we can safely switch to them, especially if IE10- and Safari 12- are not needed. And even with those browsers, there are polyfills that enable the support of pointer events.
+
 */

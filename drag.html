@@ -1,0 +1,103 @@
+<!-- 
+https://javascript.info/mouse-drag-and-drop 
+We considered a basic Drag’n’Drop algorithm.
+
+The key components:
+
+Events flow: ball.mousedown → document.mousemove → ball.mouseup (don’t forget to cancel native ondragstart).
+At the drag start – remember the initial shift of the pointer relative to the element: shiftX/shiftY and keep it during the dragging.
+Detect droppable elements under the pointer using document.elementFromPoint.
+We can lay a lot on this foundation.
+
+On mouseup we can intellectually finalize the drop: change data, move elements around.
+We can highlight the elements we’re flying over.
+We can limit dragging by a certain area or direction.
+We can use event delegation for mousedown/up. A large-area event handler that checks event.target can manage Drag’n’Drop for hundreds of elements.
+And so on.
+There are frameworks that build architecture over it: DragZone, Droppable, Draggable and other classes. Most of them do the similar stuff to what’s described above, so it should be easy to understand them now. Or roll your own, as you can see that that’s easy enough to do, sometimes easier than adapting a third-party solution. -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <p>Drag the ball.</p>
+
+    <img
+      src="https://en.js.cx/clipart/soccer-gate.svg"
+      id="gate"
+      class="droppable"
+    />
+
+    <img src="https://en.js.cx/clipart/ball.svg" id="ball" />
+
+    <script>
+      let currentDroppable = null;
+
+      ball.onmousedown = function (event) {
+        let shiftX = event.clientX - ball.getBoundingClientRect().left;
+        let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+        ball.style.position = "absolute";
+        ball.style.zIndex = 1000;
+        document.body.append(ball);
+
+        moveAt(event.pageX, event.pageY);
+
+        function moveAt(pageX, pageY) {
+          ball.style.left = pageX - shiftX + "px";
+          ball.style.top = pageY - shiftY + "px";
+        }
+
+        function onMouseMove(event) {
+          moveAt(event.pageX, event.pageY);
+
+          ball.hidden = true;
+          let elemBelow = document.elementFromPoint(
+            event.clientX,
+            event.clientY
+          );
+          ball.hidden = false;
+
+          if (!elemBelow) return;
+
+          let droppableBelow = elemBelow.closest(".droppable");
+          if (currentDroppable != droppableBelow) {
+            if (currentDroppable) {
+              // null when we were not over a droppable before this event
+              leaveDroppable(currentDroppable);
+            }
+            currentDroppable = droppableBelow;
+            if (currentDroppable) {
+              // null if we're not coming over a droppable now
+              // (maybe just left the droppable)
+              enterDroppable(currentDroppable);
+            }
+          }
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+
+        ball.onmouseup = function () {
+          document.removeEventListener("mousemove", onMouseMove);
+          ball.onmouseup = null;
+        };
+      };
+
+      function enterDroppable(elem) {
+        elem.style.background = "pink";
+      }
+
+      function leaveDroppable(elem) {
+        elem.style.background = "";
+      }
+
+      ball.ondragstart = function () {
+        return false;
+      };
+    </script>
+  </body>
+</html>
