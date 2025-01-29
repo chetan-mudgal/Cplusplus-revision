@@ -277,6 +277,9 @@ The object itself stores only the data (array items, object properties, the date
 Primitives also store methods in prototypes of wrapper objects: Number.prototype, String.prototype and Boolean.prototype. Only undefined and null do not have wrapper objects
 Built-in prototypes can be modified or populated with new methods. But it’s not recommended to change them. The only allowable case is probably when we add-in a new standard, but it’s not yet supported by the JavaScript engine
 
+prototype vs __proto__
+prototype is a property of functions and is used to define properties/methods for instances.
+__proto__ is a property of objects and points to their prototype.
 */
 
 //--------------------Promises --------------------------------------------
